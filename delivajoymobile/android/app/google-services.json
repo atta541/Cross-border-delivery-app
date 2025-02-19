@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "38106251938",
+    "project_id": "delivajoymobile-7c40c",
+    "storage_bucket": "delivajoymobile-7c40c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:38106251938:android:f642bd7798584cdfaf0dfb",
+        "android_client_info": {
+          "package_name": "com.delivajoymobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvFndRijNdjExZCRe7RbgBobq962FU3kI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stripe Identity Verification</title>
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <button id="verify-button">Verify Your Identity</button>
+
+    <script>
+        const stripe = Stripe('pk_test_eq21gKYPVUHFaaiOsj0h0q0i'); // Replace with your actual Stripe publishable key
+
+        document.getElementById('verify-button').addEventListener('click', async () => {
+            // Assuming you have received the client_secret from the backend
+            const clientSecret = "vs_1QD6VsKHug0ZiN85SfHGo3bf_secret_test_YWNjdF8xQlRPV0xLSHVnMFppTjg1LF9SNUg0VzdvWUZLU0NxWlZ6SEttYjNtSDJhcURrM1NN0100nnOzvJ0U"; // Replace with the actual client_secret you received
+
+            const { error } = await stripe.verifyIdentity(clientSecret);
+
+            if (error) {
+                // Handle any errors that occur during verification
+                console.error('Error during verification:', error);
+            } else {
+                // The verification process has started
+                console.log('Verification started successfully.');
+            }
+        });
+    </script>
+</body>
+</html>

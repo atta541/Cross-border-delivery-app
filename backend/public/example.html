@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Verify your identity</title>
+    <meta name="description" content="Stripe Identity verification" />
+    <script src="https://js.stripe.com/v3/"></script>
+  </head>
+  <body>
+    <div>
+      <h1>Verify your identity</h1>
+      <button id="verify-button">Verify Me</button>
+    </div>
+
+    <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', async () => {
+        const verifyButton = document.getElementById('verify-button');
+        verifyButton.addEventListener('click', async () => {
+          try {
+            // Call the backend route to create the Verification Session
+            const { client_secret } = await fetch('/verification/create-verification-session', {
+              method: 'POST',
+            }).then(response => response.json());
+
+            // Initialize Stripe
+            const stripe = Stripe('pk_test_eq21gKYPVUHFaaiOsj0h0q0i');
+
+            // Open the verification modal
+            const { error } = await stripe.verifyIdentity(client_secret);
+            if (error) {
+              alert(error.message);
+            } else {
+              alert('Verification submitted!');
+            }
+          } catch (error) {
+            alert('An error occurred: ' + error.message);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attach Bank Account</title>
+</head>
+<body>
+  <h2>Attach Bank Account</h2>
+  <form id="bank-account-form">
+    <label for="account_id">Account ID:</label>
+    <input type="text" id="account_id" name="account_id" required><br><br>
+
+    <label for="account_number">Account Number:</label>
+    <input type="text" id="account_number" name="account_number" required><br><br>
+
+    <label for="country">Country:</label>
+    <input type="text" id="country" name="country" required><br><br>
+
+    <label for="routing">Routing Number:</label> <!-- Changed name attribute to "routing" -->
+    <input type="text" id="routing" name="routing" required><br><br>
+
+    <label for="currency">Currency:</label>
+    <input type="text" id="currency" name="currency" required><br><br>
+
+    <button type="button" onclick="attachExternalAccount()">Attach</button>
+  </form>
+
+  <script>
+    async function attachExternalAccount() {
+      const form = document.getElementById('bank-account-form');
+      const formData = new FormData(form);
+
+      const data = {
+        account_id: formData.get('account_id'),
+        account_number: formData.get('account_number'),
+        country: formData.get('country'),
+        currency: formData.get('currency'),
+        routing: formData.get('routing') // Ensure routing number is collected correctly
+      };
+
+      if (!data.routing) {
+        alert("Routing number is required.");
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:3000/verification/attach-external-bank-account', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        alert(result.message);
+      } catch (error) {
+        alert(`Error: ${error.message}`);
+      }
+    }
+  </script>
+</body>
+</html>
+

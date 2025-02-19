@@ -1,0 +1,93 @@
+import { Controller, Post, Body, Req, UseGuards, Get, BadRequestException } from '@nestjs/common';
+import { PaymentService } from './payment.service';
+import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
+
+interface RequestWithUser extends Request {
+  user: {
+    id: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    roles: string[];
+  };
+}
+
+@Controller('payments')
+export class PaymentController {
+  constructor(private readonly paymentsService: PaymentService) { }
+
+  @Post('create-customer')
+  @UseGuards(AuthGuard('jwt'))
+  async createCustomer(@Req() req: RequestWithUser) {
+    const { id: userId, email } = req.user;
+    const customer = await this.paymentsService.createCustomer(email, userId);
+    return {
+      customerId: customer.id,
+    };
+  }
+
+
+  
+  @Post('create-payment-intent')
+  @UseGuards(AuthGuard('jwt'))
+  async createPaymentIntent(
+    @Req() req: RequestWithUser,
+    @Body('amount') amount: string,
+    @Body('customerId') customerId: string,
+    @Body('name') name: string,
+    @Body('ProductName') ProductName: string
+
+  ) {
+    const userId = req.user.id;
+    const currency = 'usd';
+    const email = req.user.email;
+
+    // Convert amount to number
+    const parsedAmount = Number(amount);
+    if (isNaN(parsedAmount)) {
+      throw new BadRequestException('Amount must be a valid number');
+    }
+
+    const paymentIntent = await this.paymentsService.createPaymentIntent(userId, parsedAmount, currency, email, name, customerId, ProductName);
+
+    return {
+      clientSecret: paymentIntent.paymentIntentId,
+    };
+  }
+
+  @Post('confirm-payment')
+  @UseGuards(AuthGuard('jwt'))
+  async confirmPayment(@Body('paymentIntentId') paymentIntentId: string) {
+    try {
+      const paymentIntent = await this.paymentsService.confirmPayment(paymentIntentId);
+      return {
+        message: 'Payment confirmed successfully',
+        paymentIntent,
+      };
+    } catch (error) {
+      throw new BadRequestException('Failed to confirm payment');
+    }
+  }
+
+
+
+  @Post('create-payment-method')
+  @UseGuards(AuthGuard('jwt'))
+  async createPaymentMethod(@Body() createPaymentDto) {
+    const { customerId, token } = createPaymentDto; // Extract token from the request
+  
+    // Ensure that both customerId and token are provided
+    if (!customerId || !token) {
+      throw new BadRequestException('Customer ID and token are required');
+    }
+  
+    // Call the service method with the token
+    const paymentMethod = await this.paymentsService.createPaymentMethod(customerId, token);
+  
+    return { message: 'Payment method created and attached', paymentMethod };
+  }
+  
+
+
+}

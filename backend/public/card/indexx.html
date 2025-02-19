@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Payment Method</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        /* Basic styling for form elements */
+        .form-group {
+            margin-bottom: 1em;
+        }
+        .StripeElement {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        #card-errors {
+            color: red; /* Style error messages in red */
+        }
+    </style>
+</head>
+<body>
+    <h1>Create Payment Method</h1>
+    <form id="payment-form">
+        <input type="text" id="customerId" placeholder="Customer ID" required>
+        <div class="form-group">
+            <label for="card-element">Credit or debit card</label>
+            <div id="card-element" class="StripeElement"></div>
+            <div id="card-errors" role="alert"></div>
+        </div>
+        <button type="submit">Add Payment Method</button>
+    </form>
+
+    <script>
+        // Replace with your actual publishable key
+        const stripe = Stripe('pk_test_51PQQsWIJIsx7jmFZxeK72wC321674plCOCLaslbW7gEDLUpnFLixxrLGqCp5v2ZBoZKLjURFd5WEhkPfdTAywsNi00mHhvQ8Tc'); // Your publishable key
+        const elements = stripe.elements();
+
+        // Create an instance of the card Element.
+        const cardElement = elements.create('card');
+        cardElement.mount('#card-element');
+
+        // Your JWT token
+        const hardCodedToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZWFhMzM0N2Q5ZjJkYThmZjU1YzU3ZCIsInJvbGVzIjpbImNsaWVudCJdLCJzdWIiOiI2NmVhYTMzNDdkOWYyZGE4ZmY1NWM1N2QiLCJpYXQiOjE3Mjk1OTI1NjYsImV4cCI6MTcyOTg1MTc2Nn0.uzcqd5_CmMNXG9Xhz9O99Ars99i5-SMIE9cccDCTKjg';
+
+        document.getElementById('payment-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const customerId = document.getElementById('customerId').value;
+
+            try {
+                // Create a token using the card element
+                const { token, error } = await stripe.createToken(cardElement);
+
+                // Handle any errors from the token creation
+                if (error) {
+                    console.error(error);
+                    document.getElementById('card-errors').textContent = error.message;
+                    return;
+                }
+
+                // Send the token to your server
+                const response = await fetch('http://localhost:3000/payments/create-payment-method', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Include the JWT token in the Authorization header
+                        'Authorization': `Bearer ${hardCodedToken}`, 
+                    },
+                    body: JSON.stringify({
+                        customerId,
+                        token: token.id, // Use the token created from Stripe
+                    }),
+                });
+
+                const data = await response.json();
+                console.log(data);
+                if (response.ok) {
+                    alert('Payment Method Added: ' + JSON.stringify(data));
+                } else {
+                    alert('Failed to add payment method: ' + JSON.stringify(data));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to add payment method: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
