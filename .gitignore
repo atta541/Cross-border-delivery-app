@@ -3,3 +3,9 @@ backend/*.env.*
 
 
 .notes.txt
+
+.controler.txt
+.service.txt2
+.stripeconnectacc.txt
+.verifyacc.js
+.verifydoc.js
