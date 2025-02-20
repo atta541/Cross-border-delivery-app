@@ -57,7 +57,7 @@ describe('PaymentService', () => {
     };
 
     // beforeEach(async () => {
-    //     process.env.STRIPE_TEST_SECRET_KEY = 'sk_test_51PQQsWIJIsx7jmFZGSmKtlhhxQT0EkPhWcbVOiPHRtrOHfefIeQnQU5lM7vqVYqv99MCeKEizEvLhhTbbpzcyxjx00tLMFCtGG';
+    //     process.env.STRIPE_TEST_SECRET_KEY = 'sk_test_51PQQsG';
 
     //     console.log("Stripe Test Secret Key:", process.env.STRIPE_TEST_SECRET_KEY);
 
@@ -90,7 +90,7 @@ describe('PaymentService', () => {
 
 
     beforeEach(async () => {
-        process.env.STRIPE_TEST_SECRET_KEY = 'sk_test_51PQQsWIJIsx7jmFZGSmKtlhhxQT0EkPhWcbVOiPHRtrOHfefIeQnQU5lM7vqVYqv99MCeKEizEvLhhTbbpzcyxjx00tLMFCtGG';
+        process.env.STRIPE_TEST_SECRET_KEY = 'sk_test_MCeKCtGG';
         
         stripeMock = {
           customers: {
